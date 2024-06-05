@@ -3,7 +3,6 @@ import 'package:path/path.dart';
 import 'package:sistema_bilheteira/model/cliente_model.dart';
 import 'package:sqflite/sqflite.dart';
 
-
 class DatabaseHelper {
   static final DatabaseHelper _instance = DatabaseHelper._internal();
   factory DatabaseHelper() => _instance;
@@ -24,7 +23,7 @@ class DatabaseHelper {
       path,
       onCreate: (db, version) {
         return db.execute(
-          'CREATE TABLE clients(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, email TEXT)',
+          'CREATE TABLE clients(id INTEGER PRIMARY KEY, name TEXT, email TEXT, telefone TEXT)',
         );
       },
       version: 1,
@@ -33,7 +32,9 @@ class DatabaseHelper {
 
   Future<void> insertClient(Cliente cliente) async {
     final db = await database;
-    await db.insert('clients', cliente.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
+    cliente.id = DateTime.now().microsecondsSinceEpoch;
+    await db.insert('clients', cliente.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
   Future<List<Cliente>> clients() async {
@@ -44,7 +45,7 @@ class DatabaseHelper {
         id: maps[i]['id'],
         nome: maps[i]['name'],
         email: maps[i]['email'],
-      //  telefone: maps[i]['telefone'],
+        telefone: maps[i]['telefone'],
       );
     });
   }

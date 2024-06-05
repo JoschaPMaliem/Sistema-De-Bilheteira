@@ -1,46 +1,30 @@
-
 //import 'dart:ffi';
 
 class Cliente {
-  final int? id;
+  int? id;
   final String nome;
   final String email;
-  //final String telefone;
+  final String telefone;
 
-
-
-  Cliente(
-    // 
-    // required this.telefone
-    {
-     this.id,
+  Cliente({
+    this.id,
     required this.nome,
     required this.email,
-   }
-  );
+    required this.telefone
+  });
 
-    Map<String, dynamic> toMap() {
+  Map<String, dynamic> toMap() {
     return {
       'id': id,
       'name': nome,
       'email': email,
-     // 'telefone': telefone
+      'telefone': telefone
     };
   }
 
-   @override
+  @override
   String toString() {
-    return 'Cliente{id: $id,  name: $nome, email: $email}';
+    return 'Cliente{id: $id,  name: $nome, email: $email, telefone: $telefone}';
     //
   }
 }
-
-
-
-
-
-
-
-
-
-

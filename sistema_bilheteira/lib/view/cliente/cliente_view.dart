@@ -1,18 +1,15 @@
-// lib/views/home_page.dart
 import 'package:flutter/material.dart';
 import 'package:sistema_bilheteira/controller/cliente_controller.dart';
 import 'package:sistema_bilheteira/model/cliente_model.dart';
 
-
-class HomePage extends StatefulWidget {
+class HomePage_Cliente extends StatefulWidget {
   @override
-  _HomePageState createState() => _HomePageState();
+  _HomePage_ClienteState createState() => _HomePage_ClienteState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePage_ClienteState extends State<HomePage_Cliente> {
   final DatabaseHelper _dbHelper = DatabaseHelper();
   final _formKey = GlobalKey<FormState>();
-  final _idController = TextEditingController();
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _telefoneController = TextEditingController();
@@ -32,10 +29,9 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _clearForm() {
-    //_idController.clear();
     _nameController.clear();
     _emailController.clear();
-    //_telefoneController.clear();
+    _telefoneController.clear();
   }
 
   @override
@@ -72,12 +68,23 @@ class _HomePageState extends State<HomePage> {
                       return null;
                     },
                   ),
-                 ElevatedButton(
+                  TextFormField(
+                    controller: _telefoneController,
+                    decoration: InputDecoration(labelText: 'Telefone'),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Digite seu numero de telefone';
+                      }
+                      return null;
+                    },
+                  ),
+                  ElevatedButton(
                     onPressed: () async {
                       if (_formKey.currentState!.validate()) {
                         final cliente = Cliente(
                           nome: _nameController.text,
                           email: _emailController.text,
+                          telefone: _telefoneController.text,
                         );
                         await _dbHelper.insertClient(cliente);
                         _clearForm();
@@ -94,8 +101,14 @@ class _HomePageState extends State<HomePage> {
                 itemCount: _cliente.length,
                 itemBuilder: (context, index) {
                   return ListTile(
-                    title: Text(_cliente[index].nome),
-                    subtitle: Text(_cliente[index].email),
+                    title: Text('${_cliente[index].id}: ${_cliente[index].nome}'),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Email: ${_cliente[index].email}'),
+                        Text('Telefone: ${_cliente[index].telefone}'),
+                      ],
+                    ),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -150,7 +163,7 @@ class _HomePageState extends State<HomePage> {
                                           id: _cliente[index].id,
                                           nome: _nameController.text,
                                           email: _emailController.text,
-                                        //  telefone: _telefoneController.text,
+                                          telefone: _telefoneController.text,
                                         );
                                         await _dbHelper.updateClient(updatedClient);
                                         _clearForm();

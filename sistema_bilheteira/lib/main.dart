@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:sistema_bilheteira/view/cliente/cliente_view.dart';
 
 void main() {
-  runApp(ClientManagementApp());
+  runApp(BilheteiraApp());
 }
 
-class ClientManagementApp extends StatelessWidget {
+class BilheteiraApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -14,7 +14,7 @@ class ClientManagementApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: HomePage(),
+      home: HomePage_Cliente(),
     );
   }
 }
