@@ -8,7 +8,7 @@ class HomePage_Cliente extends StatefulWidget {
 }
 
 class _HomePage_ClienteState extends State<HomePage_Cliente> {
-  final DatabaseHelper _dbHelper = DatabaseHelper();
+  final ClienteController _dbHelper = ClienteController();
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
@@ -22,7 +22,7 @@ class _HomePage_ClienteState extends State<HomePage_Cliente> {
   }
 
   void _refreshClients() async {
-    final data = await _dbHelper.clients();
+    final data = await _dbHelper.getClientes();
     setState(() {
       _cliente = data;
     });
@@ -50,10 +50,10 @@ class _HomePage_ClienteState extends State<HomePage_Cliente> {
                 children: [
                   TextFormField(
                     controller: _nameController,
-                    decoration: InputDecoration(labelText: 'Name'),
+                    decoration: InputDecoration(labelText: 'Nome'),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter a name';
+                        return 'Digite o nome';
                       }
                       return null;
                     },
@@ -63,7 +63,7 @@ class _HomePage_ClienteState extends State<HomePage_Cliente> {
                     decoration: InputDecoration(labelText: 'Email'),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter an email';
+                        return 'Digite o email';
                       }
                       return null;
                     },
@@ -81,17 +81,16 @@ class _HomePage_ClienteState extends State<HomePage_Cliente> {
                   ElevatedButton(
                     onPressed: () async {
                       if (_formKey.currentState!.validate()) {
-                        final cliente = Cliente(
-                          nome: _nameController.text,
-                          email: _emailController.text,
-                          telefone: _telefoneController.text,
+                        await _dbHelper.criarCliente(
+                          _nameController.text,
+                          _emailController.text,
+                          _telefoneController.text,
                         );
-                        await _dbHelper.insertClient(cliente);
                         _clearForm();
                         _refreshClients();
                       }
                     },
-                    child: Text('Add Client'),
+                    child: Text('Adicionar Cliente'),
                   ),
                 ],
               ),
@@ -101,7 +100,8 @@ class _HomePage_ClienteState extends State<HomePage_Cliente> {
                 itemCount: _cliente.length,
                 itemBuilder: (context, index) {
                   return ListTile(
-                    title: Text('${_cliente[index].id}: ${_cliente[index].nome}'),
+                    title:
+                        Text('${_cliente[index].id}: ${_cliente[index].nome}'),
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -120,7 +120,7 @@ class _HomePage_ClienteState extends State<HomePage_Cliente> {
                             showDialog(
                               context: context,
                               builder: (context) => AlertDialog(
-                                title: Text('Edit Client'),
+                                title: Text('Editar Cliente'),
                                 content: Form(
                                   key: _formKey,
                                   child: Column(
@@ -128,20 +128,34 @@ class _HomePage_ClienteState extends State<HomePage_Cliente> {
                                     children: [
                                       TextFormField(
                                         controller: _nameController,
-                                        decoration: InputDecoration(labelText: 'Name'),
+                                        decoration:
+                                            InputDecoration(labelText: 'Nome'),
                                         validator: (value) {
                                           if (value == null || value.isEmpty) {
-                                            return 'Please enter a name';
+                                            return 'Digite o nome';
                                           }
                                           return null;
                                         },
                                       ),
                                       TextFormField(
                                         controller: _emailController,
-                                        decoration: InputDecoration(labelText: 'Email'),
+                                        decoration:
+                                            InputDecoration(labelText: 'Email'),
                                         validator: (value) {
                                           if (value == null || value.isEmpty) {
-                                            return 'Please enter an email';
+                                            return 'Digite o email';
+                                          }
+                                          return null;
+                                        },
+                                      ),
+
+                                      TextFormField(
+                                        controller: _telefoneController,
+                                        decoration:
+                                            InputDecoration(labelText: 'Telefone'),
+                                        validator: (value) {
+                                          if (value == null || value.isEmpty) {
+                                            return 'Digite o numero de telefone';
                                           }
                                           return null;
                                         },
@@ -158,20 +172,19 @@ class _HomePage_ClienteState extends State<HomePage_Cliente> {
                                   ),
                                   ElevatedButton(
                                     onPressed: () async {
-                                      if (_formKey.currentState!.validate()) {
-                                        final updatedClient = Cliente(
-                                          id: _cliente[index].id,
-                                          nome: _nameController.text,
-                                          email: _emailController.text,
-                                          telefone: _telefoneController.text,
+                                     if (_formKey.currentState!.validate()) {
+                                        await _dbHelper.atualizarCliente(
+                                          _cliente[index].id!,
+                                          _nameController.text,
+                                          _emailController.text,
+                                          _telefoneController.text,
                                         );
-                                        await _dbHelper.updateClient(updatedClient);
                                         _clearForm();
                                         Navigator.of(context).pop();
                                         _refreshClients();
                                       }
                                     },
-                                    child: Text('Update'),
+                                    child: Text('Atualizar'),
                                   ),
                                 ],
                               ),
@@ -181,7 +194,7 @@ class _HomePage_ClienteState extends State<HomePage_Cliente> {
                         IconButton(
                           icon: Icon(Icons.delete),
                           onPressed: () async {
-                            await _dbHelper.deleteClient(_cliente[index].id!);
+                            await _dbHelper.apagarCliente(_cliente[index].id!);
                             _refreshClients();
                           },
                         ),

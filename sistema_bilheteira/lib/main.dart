@@ -1,6 +1,7 @@
 // lib/main.dart
 import 'package:flutter/material.dart';
 import 'package:sistema_bilheteira/view/cliente/cliente_view.dart';
+import 'package:sistema_bilheteira/view/produto/produto_view.dart';
 
 void main() {
   runApp(BilheteiraApp());
@@ -14,7 +15,8 @@ class BilheteiraApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: HomePage_Cliente(),
+      home: ProdutoView(), 
+      //HomePage_Cliente(),
     );
   }
 }
