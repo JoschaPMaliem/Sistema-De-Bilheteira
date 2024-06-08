@@ -9,6 +9,7 @@ class Bilhete {
   final DateTime dataDoEvento;
   final double preco;
   final String status;
+  int? estoque;
 
   Bilhete({
     this.id,
@@ -17,6 +18,7 @@ class Bilhete {
     required this.dataDoEvento,
     required this.preco,
     required this.status,
+     this.estoque,
   });
 
   Map<String, dynamic> toMap() {
@@ -32,7 +34,7 @@ class Bilhete {
 
   @override
   String toString() {
-    return 'Bilhete{id: $id, nome: $nome, descricao: $descricao, dataDoEvento: $dataDoEvento, preco: $preco, status: $status}';
+    return 'Bilhete{id: $id, nome: $nome, descricao: $descricao, dataDoEvento: $dataDoEvento, preco: $preco, status: $status, estoque: $estoque}';
   }
 }
 
@@ -44,6 +46,7 @@ class BilheteModel {
   Future<int> criarBilhete(Bilhete bilhete) async {
     final db = await _database;
     return await db.insert('bilhetes', bilhete.toMap());
+    
   }
 
   Future<int> atualizarBilhete(Bilhete bilhete) async {
@@ -77,10 +80,13 @@ class BilheteModel {
         dataDoEvento: DateTime.parse(json['dataDoEvento'] as String),
         preco: json['preco'] as double,
         status: json['status'] as String,
+        estoque: json['estoque'] as int,
       );
     }).toList();
   }
 
+  
+  /*
   Future<List<Inventario>> verificarEstoque() async {
     final db = await BaseDeDados().database;
     final result = await db.rawQuery('''
@@ -99,9 +105,12 @@ class BilheteModel {
           dataDoEvento: DateTime.parse(json['dataDoEvento'] as String),
           preco: json['preco'] as double,
           status: json['status'] as String,
+          estoque: json['estoque'] as int,
         ),
         estoque: json['estoque'] as int,
       );
     }).toList();
   }
+
+  */
 }

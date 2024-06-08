@@ -31,7 +31,7 @@ class BaseDeDados {
   Future _createDB(Database db, int version) async {
     await db.execute('''
       CREATE TABLE clientes (
-        id INTEGER PRIMARY KEY,
+        id INTEGER PRIMARY KEY AUTO_INCREMENT,
         nome TEXT NOT NULL,
         email TEXT NOT NULL,
         telefone TEXT NOT NULL
@@ -40,18 +40,19 @@ class BaseDeDados {
 
     await db.execute('''
       CREATE TABLE bilhetes (
-        id INTEGER PRIMARY KEY,
+        id INTEGER PRIMARY KEY AUTO_INCREMENT,
         nome TEXT NOT NULL,
         descricao TEXT NOT NULL,
         dataDoEvento TEXT NOT NULL,
         preco REAL NOT NULL,
-        status TEXT NOT NULL
+        status TEXT NOT NULL,
+        estoque INTEGER NOT NULL
       )
     ''');
 
     await db.execute('''
       CREATE TABLE vendas (
-        id INTEGER PRIMARY KEY,
+        id INTEGER PRIMARY KEY AUTO_INCREMENT,
         clienteId INTEGER NOT NULL,
         bilheteId INTEGER NOT NULL,
         quantidade INTEGER NOT NULL,
@@ -64,7 +65,7 @@ class BaseDeDados {
 
     await db.execute('''
       CREATE TABLE cliente_login (
-        id INTEGER PRIMARY KEY,
+        id INTEGER PRIMARY KEY AUTO_INCREMENT,
         clienteId INTEGER NOT NULL,
         username TEXT NOT NULL,
         password TEXT NOT NULL,

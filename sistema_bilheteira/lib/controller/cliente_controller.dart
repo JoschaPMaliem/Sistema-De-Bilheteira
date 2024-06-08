@@ -9,8 +9,10 @@ class ClienteController {
     return await _clienteModel.criarCliente(novoCliente);
   }
 
-  Future<int> atualizarCliente(int id, String nome, String email, String telefone) async {
-    Cliente clienteAtualizado = Cliente(id: id, nome: nome, email: email, telefone: telefone);
+  Future<int> atualizarCliente(
+      int id, String nome, String email, String telefone) async {
+    Cliente clienteAtualizado =
+        Cliente(id: id, nome: nome, email: email, telefone: telefone);
     return await _clienteModel.atualizarCliente(clienteAtualizado);
   }
 
@@ -21,6 +23,4 @@ class ClienteController {
   Future<List<Cliente>> getClientes() async {
     return await _clienteModel.getClientes();
   }
-
-  
 }

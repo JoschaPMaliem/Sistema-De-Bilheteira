@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:sistema_bilheteira/controller/cliente_controller.dart';
 import 'package:sistema_bilheteira/model/cliente_model.dart';
 
-class HomePage_Cliente extends StatefulWidget {
+class ClienteView extends StatefulWidget {
   @override
-  _HomePage_ClienteState createState() => _HomePage_ClienteState();
+  _ClienteViewState createState() => _ClienteViewState();
 }
 
-class _HomePage_ClienteState extends State<HomePage_Cliente> {
+class _ClienteViewState extends State<ClienteView> {
   final ClienteController _dbHelper = ClienteController();
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();

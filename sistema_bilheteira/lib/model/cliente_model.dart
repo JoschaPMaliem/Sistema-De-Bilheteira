@@ -26,7 +26,6 @@ class Cliente {
 class ClienteModel {
   Future<int> criarCliente(Cliente cliente) async {
     final db = await BaseDeDados().database;
-    cliente.id = DateTime.now().microsecondsSinceEpoch;
     return await db.insert('clientes', cliente.toMap());
   }
 
@@ -61,5 +60,20 @@ class ClienteModel {
               telefone: json['telefone'] as String,
             ))
         .toList();
+  }
+
+  Future<Cliente?> getClienteById(int id) async {
+    final db = await BaseDeDados().database;
+    final result = await db.query('clientes', where: 'id = ?', whereArgs: [id]);
+
+    if (result.isNotEmpty) {
+      return Cliente(
+        id: result.first['id'] as int,
+        nome: result.first['nome'] as String,
+        email: result.first['email'] as String,
+        telefone: result.first['telefone'] as String,
+      );
+    }
+    return null;
   }
 }
