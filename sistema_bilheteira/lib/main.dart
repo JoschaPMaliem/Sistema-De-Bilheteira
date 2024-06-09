@@ -62,6 +62,12 @@ class _MyHomePageState extends State<MyHomePage> {
         });
         break;
 
+        case 6:
+        setState(() {
+         // _currentView = LoginView();
+        });
+        break;
+
        
 
         

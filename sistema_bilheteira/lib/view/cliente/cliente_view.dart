@@ -16,7 +16,6 @@ class _ClienteViewState extends State<ClienteView> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _telefoneController = TextEditingController();
-  late Future<Map<String, dynamic>> _listaProdutoPorCliente;
 
   List<Cliente> _cliente = [];
 
@@ -223,26 +222,24 @@ class _ClienteViewState extends State<ClienteView> {
     );
   }
 
-void _showClienteProdutos(BuildContext context, int clientId) async {
-  // Fetch the list of products associated with the client
-  final List<Bilhete> produtosDoCliente = await bilheteController.getBilhetesPorCliente(clientId);
+  void _showClienteProdutos(BuildContext context, int clientId) async {
+    final List<Bilhete> produtosDoCliente =
+        await bilheteController.getBilhetesPorCliente(clientId);
 
-  // Check if there are any products associated with the client
-  if (produtosDoCliente.isEmpty) {
-    print('Este cliente não possui produtos associados.');
-    return;
+    if (produtosDoCliente.isEmpty) {
+      print('Este cliente não possui produtos associados.');
+      return;
+    }
+
+    print('Produtos do Cliente (Cliente ID: $clientId):');
+    // Print details of each product
+    for (Bilhete produto in produtosDoCliente) {
+      print('  Nome: ${produto.nome}');
+      print('  Descrição: ${produto.descricao}');
+      print('  Data do Evento: ${produto.dataDoEvento.toIso8601String()}');
+      print('  Preço: R\$ ${produto.preco.toStringAsFixed(2)}');
+      print('  Status: ${produto.status}');
+      print('-------------------');
+    }
   }
-
-  print('Produtos do Cliente (Cliente ID: $clientId):');
-  // Print details of each product
-  for (Bilhete produto in produtosDoCliente) {
-    print('  Nome: ${produto.nome}');
-    print('  Descrição: ${produto.descricao}');
-    print('  Data do Evento: ${produto.dataDoEvento.toIso8601String()}');
-    print('  Preço: R\$ ${produto.preco.toStringAsFixed(2)}');
-    print('  Status: ${produto.status}');
-    print('-------------------');
-  }
-}
-
 }

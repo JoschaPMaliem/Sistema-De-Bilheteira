@@ -69,7 +69,7 @@ class MainMenuDrawer extends StatelessWidget {
             title: Text('Cliente Simulador'),
             onTap: () {
               onMenuItemClicked(
-                  5); // Callback to inform that the Reports menu item was clicked
+                  6); // Callback to inform that the Reports menu item was clicked
             },
           ),
         ],
