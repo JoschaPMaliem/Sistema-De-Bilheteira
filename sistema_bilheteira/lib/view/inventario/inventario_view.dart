@@ -1,68 +1,76 @@
 import 'package:flutter/material.dart';
 import 'package:sistema_bilheteira/controller/inventario_controller.dart';
-import 'package:sistema_bilheteira/model/inventario_model.dart';
 import 'package:sistema_bilheteira/model/produto_model.dart';
 
 class InventarioView extends StatefulWidget {
+  const InventarioView({super.key});
+
   @override
-  _InventarioViewState createState() => _InventarioViewState();
+  State<InventarioView> createState() => _InventarioViewState();
 }
 
 class _InventarioViewState extends State<InventarioView> {
   final InventarioController _inventarioController = InventarioController();
-  List<Bilhete>? _produtos;
-  int? _stock;
+  late Future<List<Bilhete>> _produtosFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _produtosFuture = _inventarioController.getTodosProdutos();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Inventario View'),
+        title: Text('Inventário'),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ElevatedButton(
-              onPressed: () async {
-                int pontoDeEncomenda = 5;
-                List<Bilhete> produtos = await _inventarioController.getProdutosAbaixoReorderPoint(pontoDeEncomenda);
-                setState(() {
-                  _produtos = produtos;
-                });
-              },
-              child: Text('Listar produtos abaixo do estoque limite'),
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                int produtoId = 1; // Example product ID
-                int stock = await _inventarioController.verificarEstoque(produtoId);
-                setState(() {
-                  _stock = stock;
-                });
-              },
-              child: Text('Verificar estoque do produto'),
-            ),
-            if (_stock != null)
-              Text('Estoque do produto: $_stock'),
-            if (_produtos != null && _produtos!.isNotEmpty)
-              Expanded(
-                child: ListView.builder(
-                  itemCount: _produtos!.length,
-                  itemBuilder: (context, index) {
-                    final produto = _produtos![index];
-                    return ListTile(
-                      title: Text('Produto: ${produto.nome}'),
-                      subtitle: Text('Estoque: ${produto.estoque}'),
-                    );
+      body: FutureBuilder<List<Bilhete>>(
+        future: _produtosFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Erro: ${snapshot.error}'));
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return Center(child: Text('Nenhum produto encontrado.'));
+          } else {
+            final produtos = snapshot.data!;
+            return ListView.builder(
+              itemCount: produtos.length,
+              itemBuilder: (context, index) {
+                final produto = produtos[index];
+                return ListTile(
+                  title: Text(produto.nome),
+                  onTap: () {
+                    _showEstoqueDialog(context, produto);
                   },
-                ),
-              ),
-            if (_produtos != null && _produtos!.isEmpty)
-              Text('Nenhum produto abaixo do estoque limite.'),
-          ],
-        ),
+                );
+              },
+            );
+          }
+        },
       ),
+    );
+  }
+
+  void _showEstoqueDialog(BuildContext context, Bilhete produto) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Estoque de ${produto.nome}'),
+          content: Text('Quantidade disponível: ${produto.estoque}'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Fechar'),
+            ),
+          ],
+        );
+      },
     );
   }
 }

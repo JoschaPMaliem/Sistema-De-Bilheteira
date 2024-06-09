@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:sistema_bilheteira/controller/cliente_controller.dart';
+import 'package:sistema_bilheteira/controller/produto_controller.dart';
 import 'package:sistema_bilheteira/model/cliente_model.dart';
+import 'package:sistema_bilheteira/model/produto_model.dart';
 
 class ClienteView extends StatefulWidget {
   @override
@@ -8,11 +10,14 @@ class ClienteView extends StatefulWidget {
 }
 
 class _ClienteViewState extends State<ClienteView> {
-  final ClienteController _dbHelper = ClienteController();
+  final ClienteController clienteController = ClienteController();
+  final ProdutoController bilheteController = ProdutoController();
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _telefoneController = TextEditingController();
+  late Future<Map<String, dynamic>> _listaProdutoPorCliente;
+
   List<Cliente> _cliente = [];
 
   @override
@@ -22,7 +27,7 @@ class _ClienteViewState extends State<ClienteView> {
   }
 
   void _refreshClients() async {
-    final data = await _dbHelper.getClientes();
+    final data = await clienteController.getClientes();
     setState(() {
       _cliente = data;
     });
@@ -38,7 +43,7 @@ class _ClienteViewState extends State<ClienteView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Client Management'),
+        title: Text('Gestão de Clientes'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -78,10 +83,11 @@ class _ClienteViewState extends State<ClienteView> {
                       return null;
                     },
                   ),
+                  SizedBox(height: 16.0),
                   ElevatedButton(
                     onPressed: () async {
                       if (_formKey.currentState!.validate()) {
-                        await _dbHelper.criarCliente(
+                        await clienteController.criarCliente(
                           _nameController.text,
                           _emailController.text,
                           _telefoneController.text,
@@ -148,11 +154,10 @@ class _ClienteViewState extends State<ClienteView> {
                                           return null;
                                         },
                                       ),
-
                                       TextFormField(
                                         controller: _telefoneController,
-                                        decoration:
-                                            InputDecoration(labelText: 'Telefone'),
+                                        decoration: InputDecoration(
+                                            labelText: 'Telefone'),
                                         validator: (value) {
                                           if (value == null || value.isEmpty) {
                                             return 'Digite o numero de telefone';
@@ -172,8 +177,9 @@ class _ClienteViewState extends State<ClienteView> {
                                   ),
                                   ElevatedButton(
                                     onPressed: () async {
-                                     if (_formKey.currentState!.validate()) {
-                                        await _dbHelper.atualizarCliente(
+                                      if (_formKey.currentState!.validate()) {
+                                        await clienteController
+                                            .atualizarCliente(
                                           _cliente[index].id!,
                                           _nameController.text,
                                           _emailController.text,
@@ -194,8 +200,15 @@ class _ClienteViewState extends State<ClienteView> {
                         IconButton(
                           icon: Icon(Icons.delete),
                           onPressed: () async {
-                            await _dbHelper.apagarCliente(_cliente[index].id!);
+                            await clienteController
+                                .apagarCliente(_cliente[index].id!);
                             _refreshClients();
+                          },
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.list),
+                          onPressed: () async {
+                            _showClienteProdutos(context, _cliente[index].id!);
                           },
                         ),
                       ],
@@ -209,4 +222,27 @@ class _ClienteViewState extends State<ClienteView> {
       ),
     );
   }
+
+void _showClienteProdutos(BuildContext context, int clientId) async {
+  // Fetch the list of products associated with the client
+  final List<Bilhete> produtosDoCliente = await bilheteController.getBilhetesPorCliente(clientId);
+
+  // Check if there are any products associated with the client
+  if (produtosDoCliente.isEmpty) {
+    print('Este cliente não possui produtos associados.');
+    return;
+  }
+
+  print('Produtos do Cliente (Cliente ID: $clientId):');
+  // Print details of each product
+  for (Bilhete produto in produtosDoCliente) {
+    print('  Nome: ${produto.nome}');
+    print('  Descrição: ${produto.descricao}');
+    print('  Data do Evento: ${produto.dataDoEvento.toIso8601String()}');
+    print('  Preço: R\$ ${produto.preco.toStringAsFixed(2)}');
+    print('  Status: ${produto.status}');
+    print('-------------------');
+  }
+}
+
 }

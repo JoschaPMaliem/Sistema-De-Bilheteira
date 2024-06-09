@@ -23,4 +23,6 @@ class ClienteController {
   Future<List<Cliente>> getClientes() async {
     return await _clienteModel.getClientes();
   }
+
+  
 }

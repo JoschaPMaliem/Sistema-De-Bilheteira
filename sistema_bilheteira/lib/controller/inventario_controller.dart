@@ -11,4 +11,10 @@ class InventarioController {
   Future<List<Bilhete>> getProdutosAbaixoReorderPoint(int reorderPoint) async {
     return await _inventarioModel.getProdutosAbaixoReorderPoint(reorderPoint);
   }
+
+    Future<List<Bilhete>> getTodosProdutos() async {
+    return await _inventarioModel.getTodosProdutos();
+  }
+
+  
 }

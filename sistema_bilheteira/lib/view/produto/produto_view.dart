@@ -16,6 +16,7 @@ class _ProdutoViewState extends State<ProdutoView> {
   final _dataController = TextEditingController();
   final _precoController = TextEditingController();
   final _statusController = TextEditingController();
+  final _estoqueController = TextEditingController(); // Add controller for estoque
 
   @override
   void initState() {
@@ -29,6 +30,7 @@ class _ProdutoViewState extends State<ProdutoView> {
     _dataController.clear();
     _precoController.clear();
     _statusController.clear();
+    _estoqueController.clear(); // Clear estoque controller
   }
 
   Future<void> _fetchBilhetes() async {
@@ -44,6 +46,7 @@ class _ProdutoViewState extends State<ProdutoView> {
         _dataController.text.isNotEmpty &&
         _precoController.text.isNotEmpty &&
         _statusController.text.isNotEmpty) {
+      
       await _produtoController.adicionarBilhete(
         _nomeController.text,
         _descricaoController.text,
@@ -63,6 +66,7 @@ class _ProdutoViewState extends State<ProdutoView> {
     _dataController.text = bilhete.dataDoEvento.toIso8601String().split('T').first;
     _precoController.text = bilhete.preco.toString();
     _statusController.text = bilhete.status;
+    _estoqueController.text = bilhete.estoque?.toString() ?? ''; // Set estoque controller value
 
     showDialog(
       context: context,
@@ -94,6 +98,11 @@ class _ProdutoViewState extends State<ProdutoView> {
               TextField(
                 controller: _statusController,
                 decoration: InputDecoration(labelText: 'Status'),
+              ),
+              TextField(
+                controller: _estoqueController,
+                decoration: InputDecoration(labelText: 'Estoque'),
+                keyboardType: TextInputType.number,
               ),
             ],
           ),
@@ -149,7 +158,8 @@ class _ProdutoViewState extends State<ProdutoView> {
               'Descrição: ${bilhete.descricao}\n'
               'Data: ${bilhete.dataDoEvento}\n'
               'Preço: ${bilhete.preco}\n'
-              'Status: ${bilhete.status}',
+              'Status: ${bilhete.status}\n'
+              'Estoque: ${bilhete.estoque}', // Display estoque
             ),
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
@@ -206,6 +216,11 @@ class _ProdutoViewState extends State<ProdutoView> {
                 controller: _statusController,
                 decoration: InputDecoration(labelText: 'Status'),
               ),
+              TextField(
+                controller: _estoqueController,
+                decoration: InputDecoration(labelText: 'Estoque'),
+                keyboardType: TextInputType.number,
+              ),
             ],
           ),
           actions: <Widget>[
@@ -217,7 +232,13 @@ class _ProdutoViewState extends State<ProdutoView> {
             ),
             ElevatedButton(
               child: Text('Salvar'),
-              onPressed: _addBilhete,
+              onPressed: () {
+                // Add estoque field if not set
+                if (_estoqueController.text.isEmpty) {
+                  _estoqueController.text = '100'; // Default estoque value
+                }
+                _addBilhete();
+              },
             ),
           ],
         );

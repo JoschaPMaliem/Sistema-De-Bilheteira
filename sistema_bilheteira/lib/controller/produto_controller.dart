@@ -11,7 +11,7 @@ class ProdutoController {
         dataDoEvento: DateTime.parse(dataDoEvento),
         preco: double.parse(preco),
         status: status,
-        estoque: 0);
+        estoque: 500);
 
     return await _bilheteModel.criarBilhete(newBilhete);
   }
@@ -34,17 +34,11 @@ class ProdutoController {
     return await _bilheteModel.apagarBilhete(id);
   }
 
-  /*
-  Future<void> verificarEstoque() async {
-    final inventario = await _bilheteModel.verificarEstoque();
-    for (var item in inventario) {
-      print('Bilhete: ${item.bilhete.nome}, Estoque: ${item.estoque}');
-    }
-  }
-
-  */
-
   Future<List<Bilhete>> getBilhetes() async {
     return await _bilheteModel.getBilhetes();
+  }
+
+   Future<List<Bilhete>> getBilhetesPorCliente(int clientId) async {
+    return await _bilheteModel.getBilhetePorCliente(clientId);
   }
 }

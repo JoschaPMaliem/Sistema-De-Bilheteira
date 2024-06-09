@@ -37,6 +37,7 @@ class Venda {
 class VendaModel {
   Future<int> criarVenda(Venda venda) async {
     final db = await BaseDeDados().database;
+    
     return await db.insert('vendas', venda.toMap());
   }
 

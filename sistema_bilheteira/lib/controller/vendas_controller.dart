@@ -5,6 +5,7 @@ import 'package:sistema_bilheteira/model/produto_model.dart';
 class VendaController {
   final VendaModel _vendaModel = VendaModel();
   final ClienteModel _clienteModel = ClienteModel();
+  final BilheteModel _bilheteModel = BilheteModel();
 
   Future<int> criarVenda(Venda venda) {
     return _vendaModel.criarVenda(venda);
@@ -28,5 +29,9 @@ class VendaController {
 
   Future<Cliente?> getClienteById(int id) {
     return _clienteModel.getClienteById(id);
+  }
+
+   Future<Bilhete?> getBilheteById(int id) {
+    return _bilheteModel.getBilheteById(id);
   }
 }

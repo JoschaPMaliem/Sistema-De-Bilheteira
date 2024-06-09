@@ -33,7 +33,7 @@ class MainMenuDrawer extends StatelessWidget {
           ),
           ListTile(
             leading: Icon(Icons.shopping_cart),
-            title: Text('Produtos'),
+            title: Text('Bilhetes'),
             onTap: () {
               onMenuItemClicked(
                   2); // Callback to inform that the Products menu item was clicked
@@ -58,6 +58,15 @@ class MainMenuDrawer extends StatelessWidget {
           ListTile(
             leading: Icon(Icons.bar_chart),
             title: Text('Relatórios'),
+            onTap: () {
+              onMenuItemClicked(
+                  5); // Callback to inform that the Reports menu item was clicked
+            },
+          ),
+
+          ListTile(
+            leading: Icon(Icons.account_circle_outlined),
+            title: Text('Cliente Simulador'),
             onTap: () {
               onMenuItemClicked(
                   5); // Callback to inform that the Reports menu item was clicked

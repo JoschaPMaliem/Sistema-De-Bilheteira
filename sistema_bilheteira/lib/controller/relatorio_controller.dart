@@ -15,8 +15,8 @@ class RelatorioController {
     };
   }
 
-  Future<Map<String, dynamic>> gerarRelatorioVenda() async {
-    final sales = await vendaModel.getVendas();
+ Future<Map<String, dynamic>> gerarRelatorioVenda() async {
+    final sales = await inventarioModel.getProdutosMaisVendidos();
     return {
       'title': 'Relatório de Vendas',
       'data': sales,

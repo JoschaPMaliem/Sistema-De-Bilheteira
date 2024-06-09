@@ -1,5 +1,4 @@
 import 'package:sistema_bilheteira/model/baseDeDados.dart';
-import 'package:sistema_bilheteira/model/inventario_model.dart';
 import 'package:sqflite/sqflite.dart';
 
 class Bilhete {
@@ -28,7 +27,8 @@ class Bilhete {
       'descricao': descricao,
       'dataDoEvento': dataDoEvento.toIso8601String(),
       'preco': preco,
-      'status': status
+      'status': status,
+      'estoque': estoque
     };
   }
 
@@ -85,32 +85,52 @@ class BilheteModel {
     }).toList();
   }
 
-  
-  /*
-  Future<List<Inventario>> verificarEstoque() async {
-    final db = await BaseDeDados().database;
-    final result = await db.rawQuery('''
-      SELECT bilhetes.*, COUNT(vendas.id) as estoque 
-      FROM bilhetes 
-      LEFT JOIN vendas ON bilhetes.id = vendas.bilheteId 
-      GROUP BY bilhetes.id
-    ''');
+    Future<Bilhete?> getBilheteById(int id) async {
+    final db = await _database;
+    final List<Map<String, dynamic>> maps = await db.query(
+      'bilhetes',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
 
-    return result.map((json) {
-      return Inventario(
-        bilhete: Bilhete(
-          id: json['id'] as int,
-          nome: json['nome'] as String,
-          descricao: json['descricao'] as String,
-          dataDoEvento: DateTime.parse(json['dataDoEvento'] as String),
-          preco: json['preco'] as double,
-          status: json['status'] as String,
-          estoque: json['estoque'] as int,
-        ),
-        estoque: json['estoque'] as int,
-      );
-    }).toList();
+    if (maps.isEmpty) {
+      return null;
+    }
+
+    return Bilhete(
+      id: maps[0]['id'] as int?,
+      nome: maps[0]['nome'] as String,
+      descricao: maps[0]['descricao'] as String,
+      dataDoEvento: DateTime.parse(maps[0]['dataDoEvento'] as String),
+      preco: maps[0]['preco'] as double,
+      status: maps[0]['status'] as String,
+      estoque: maps[0]['estoque'] as int,
+    );
   }
 
-  */
-}
+   Future<List<Bilhete>> getBilhetePorCliente(int clientId) async {
+    final db = await BaseDeDados().database;
+    final List<Map<String, dynamic>> bilheteMaps = await db.rawQuery('''
+      SELECT b.id
+      FROM vendas AS v
+      INNER JOIN bilhetes AS b ON v.bilheteId = b.id
+      WHERE v.clienteId = ?
+    ''', [clientId]);
+
+    final BilheteModel _bilheteModel = BilheteModel(); // Create an instance of BilheteModel
+    final List<Bilhete> bilhetes = [];
+
+    for (final bilheteMap in bilheteMaps) {
+      final int bilheteId = bilheteMap['id'] as int;
+      final Bilhete? bilhete = await _bilheteModel.getBilheteById(bilheteId);
+      if (bilhete != null) {
+        bilhetes.add(bilhete);
+      }
+    }
+
+    return bilhetes;
+  }
+
+  
+
+}	

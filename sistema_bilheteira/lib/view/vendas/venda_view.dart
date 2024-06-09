@@ -40,27 +40,35 @@ class _VendaViewState extends State<VendaView> {
     });
   }
 
-  Future<void> _addVenda() async {
+   Future<void> _addVenda() async {
     if (_clienteIdController.text.isNotEmpty &&
         _bilheteIdController.text.isNotEmpty &&
-        _quantidadeController.text.isNotEmpty &&
-        _valorTotalController.text.isNotEmpty &&
-        _dataDeVendaController.text.isNotEmpty) {
-      await _vendaController.criarVenda(
-        Venda(
-          id: null,
-          id_cliente: int.parse(_clienteIdController.text),
-          id_bilhete: int.parse(_bilheteIdController.text),
-          quantidade: int.parse(_quantidadeController.text),
-          valorTotal: double.parse(_valorTotalController.text),
-          dataVenda: _dataDeVendaController.text,
-        ),
-      );
-      _clearForm();
-      _fetchVendas();
-      Navigator.of(context).pop();
+        _quantidadeController.text.isNotEmpty) {
+      final bilheteId = int.parse(_bilheteIdController.text);
+      final bilhete = await _vendaController.getBilheteById(bilheteId);
+      if (bilhete != null) {
+        final preco = bilhete.preco;
+        final quantidade = int.parse(_quantidadeController.text);
+        final valorTotal = preco * quantidade;
+        final dataVenda = DateTime.now().toString();
+
+        await _vendaController.criarVenda(
+          Venda(
+            id: null,
+            id_cliente: int.parse(_clienteIdController.text),
+            id_bilhete: bilheteId,
+            quantidade: quantidade,
+            valorTotal: valorTotal,
+            dataVenda: dataVenda,
+          ),
+        );
+        _clearForm();
+        _fetchVendas();
+        Navigator.of(context).pop();
+      }
     }
   }
+
 
   void _clearForm() {
     _clienteIdController.clear();
@@ -81,7 +89,7 @@ class _VendaViewState extends State<VendaView> {
             children: <Widget>[
               TextField(
                 controller: _clienteIdController,
-                decoration: InputDecoration(labelText: 'Cliente ID'),
+                decoration: InputDecoration(labelText: 'Bilhete ID'),
                 onChanged: (value) async {
                   final clienteId = int.tryParse(value);
                   if (clienteId != null) {
@@ -96,23 +104,14 @@ class _VendaViewState extends State<VendaView> {
                 ),
               TextField(
                 controller: _bilheteIdController,
-                decoration: InputDecoration(labelText: 'Bilhete ID'),
+                decoration: InputDecoration(labelText: 'Cliente ID'),
               ),
               TextField(
                 controller: _quantidadeController,
                 decoration: InputDecoration(labelText: 'Quantidade'),
                 keyboardType: TextInputType.number,
               ),
-              TextField(
-                controller: _valorTotalController,
-                decoration: InputDecoration(labelText: 'Valor Total'),
-                keyboardType: TextInputType.number,
-              ),
-              TextField(
-                controller: _dataDeVendaController,
-                decoration: InputDecoration(labelText: 'Data de Venda'),
-                keyboardType: TextInputType.datetime,
-              ),
+              
             ],
           ),
           actions: <Widget>[
@@ -137,7 +136,7 @@ class _VendaViewState extends State<VendaView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Gestão de Vendas'),
+        title: Text('Vendas'),
       ),
       body: ListView.builder(
         itemCount: _vendas.length,
@@ -148,19 +147,19 @@ class _VendaViewState extends State<VendaView> {
             title: Text('Venda ID: ${venda.id}'),
             subtitle: Text(
               'Cliente ID: ${venda.id_cliente}\n'
-              'Cliente: $clienteNome\n'
+              'Cliente Nome: $clienteNome\n'
               'Bilhete ID: ${venda.id_bilhete}\n'
               'Quantidade: ${venda.quantidade}\n'
-              'Valor Total: ${venda.valorTotal}\n'
+              'Valor Total: ${venda.valorTotal} Mts\n'
               'Data de Venda: ${venda.dataVenda}',
             ),
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                IconButton(
+               /* IconButton(
                   icon: Icon(Icons.edit),
                   onPressed: () => _updateVenda(venda),
-                ),
+                ), */
                 IconButton(
                   icon: Icon(Icons.delete),
                   onPressed: () => _deleteVenda(venda.id!),
@@ -177,6 +176,7 @@ class _VendaViewState extends State<VendaView> {
     );
   }
 
+/*
   Future<void> _updateVenda(Venda venda) async {
     _clienteIdController.text = venda.id_cliente.toString();
     _bilheteIdController.text = venda.id_bilhete.toString();
@@ -262,6 +262,7 @@ class _VendaViewState extends State<VendaView> {
     );
   }
 
+*/
   Future<void> _deleteVenda(int id) async {
     await _vendaController.apagarVenda(id);
     _fetchVendas();
